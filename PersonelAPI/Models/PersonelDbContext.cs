@@ -26,7 +26,7 @@ public class PersonelDbContext : DbContext
         modelBuilder.Entity<BankaBilgisi>().ToTable("BankaBilgisi");
         modelBuilder.Entity<YillikIzin>().ToTable("YillikIzin");
         modelBuilder.Entity<KullanilanIzinGunu>().ToTable("KullanilanIzinGunleri");
-        modelBuilder.Entity<UcretsizIzin>().ToTable("UcretsizIzın");
+        modelBuilder.Entity<UcretsizIzin>().ToTable("UcretsizIzin");
         modelBuilder.Entity<Rapor>().ToTable("Rapor");
         modelBuilder.Entity<Maas>().ToTable("Maas");
         modelBuilder.Entity<EkOdeme>().ToTable("EkOdeme");

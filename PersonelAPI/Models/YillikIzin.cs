@@ -7,7 +7,7 @@
         public int HakedilenGun { get; set; }
         public int KullanimYili { get; set; }
 
-        public Personel Personel { get; set; }
-        public ICollection<KullanilanIzinGunu> KullanilanGunler { get; set; }
+        public Personel? Personel { get; set; }
+        public ICollection<KullanilanIzinGunu> KullanilanGunler { get; set; } = new List<KullanilanIzinGunu>();
     }
 }

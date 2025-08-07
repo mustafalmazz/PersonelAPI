@@ -6,8 +6,6 @@
         public int PersonelId { get; set; }
         public string BankaAdi { get; set; }
         public string IBAN { get; set; }
-
-        // Navigation
-        public Personel Personel { get; set; }
+        public Personel? Personel { get; set; }
     }
 }

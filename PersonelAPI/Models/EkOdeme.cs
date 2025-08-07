@@ -7,6 +7,6 @@
         public decimal Tutar { get; set; }
         public string Aciklama { get; set; }
 
-        public Maas Maas { get; set; }
+        public Maas? Maas { get; set; }
     }
 }

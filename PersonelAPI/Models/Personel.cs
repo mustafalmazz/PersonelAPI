@@ -10,11 +10,9 @@ public class Personel
     public string Gorev { get; set; }
     public DateTime IseGirisTarihi { get; set; }
     public DateTime? IstenAyrilisTarihi { get; set; }
-
-    // Navigation
-    public BankaBilgisi BankaBilgisi { get; set; }
-    public ICollection<YillikIzin> YillikIzinler { get; set; }
-    public ICollection<UcretsizIzin> UcretsizIzinler { get; set; }
-    public ICollection<Rapor> Raporlar { get; set; }
-    public ICollection<Maas> Maaslar { get; set; }
+    public BankaBilgisi? BankaBilgisi { get; set; }
+    public ICollection<YillikIzin> YillikIzinler { get; set; } = new List<YillikIzin>();
+    public ICollection<UcretsizIzin> UcretsizIzinler { get; set; } = new List<UcretsizIzin>();
+    public ICollection<Rapor> Raporlar { get; set; } = new List<Rapor>();
+    public ICollection<Maas> Maaslar { get; set; } = new List<Maas>();
 }

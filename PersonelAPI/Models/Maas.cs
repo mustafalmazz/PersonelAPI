@@ -8,7 +8,8 @@
         public decimal BrutMaas { get; set; }
         public DateTime MaasTarihi { get; set; }
 
-        public Personel Personel { get; set; }
-        public ICollection<EkOdeme> EkOdemeler { get; set; }
+        public Personel? Personel { get; set; }
+        public ICollection<EkOdeme> EkOdemeler { get; set; } = new List<EkOdeme>();
+
     }
 }

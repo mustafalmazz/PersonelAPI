@@ -8,6 +8,6 @@
         public DateTime BitisTarihi { get; set; }
         public string Aciklama { get; set; }
 
-        public Personel Personel { get; set; }
+        public Personel? Personel { get; set; }
     }
 }

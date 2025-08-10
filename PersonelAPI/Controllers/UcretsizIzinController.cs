@@ -6,40 +6,40 @@ namespace PersonelAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class KullanilanIzinGunuController : ControllerBase
+    public class UcretsizIzinController : ControllerBase
     {
         private readonly PersonelDbContext _context;
-        public KullanilanIzinGunuController(PersonelDbContext context)
+        public UcretsizIzinController(PersonelDbContext context)
         {
             _context = context;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<KullanilanIzinGunu>>> GetKullanilanIzinGunleri()
+        public async Task<ActionResult<IEnumerable<UcretsizIzin>>> GetUcretsizIzinler()
         {
-            return await _context.KullanilanIzinGunleri.ToListAsync();
+            var liste = await _context.UcretsizIzinler.Include(p=>p.Personel).ToListAsync();
+            return liste;
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<KullanilanIzinGunu>> GetKullanilanIzinGunu(int id)
+        public async Task<ActionResult<UcretsizIzin>> GetUcretsizIzin(int id)
         {
-            var izin = await _context.KullanilanIzinGunleri.FindAsync(id);
-            if (izin == null)
+            var bul = await _context.UcretsizIzinler.Include(b => b.Personel).FirstOrDefaultAsync(a=>a.Id == id);
+            if (bul == null)
             {
                 return NotFound();
             }
-            return izin;
+            return bul;
         }
         [HttpPost]
-        public async Task<ActionResult<KullanilanIzinGunu>> PostKullanilanIzinGunu(KullanilanIzinGunu izin)
+        public async Task<ActionResult> PostUcretsizIzin(UcretsizIzin izin)
         {
-            await _context.KullanilanIzinGunleri.AddAsync(izin);
+            await _context.UcretsizIzinler.AddAsync(izin);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetKullanilanIzinGunu", new { id=izin.Id }, izin);
+            return CreatedAtAction("GetUcretsizIzin", new {id=izin.Id},izin);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutKullanilanIzinGunu(KullanilanIzinGunu izin,int id)
+        public async Task<IActionResult> PutUcretsizIzin(UcretsizIzin izin,int id)
         {
-            if (id != izin.Id)
+            if(id != izin.Id)
             {
                 return BadRequest();
             }
@@ -51,7 +51,7 @@ namespace PersonelAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.KullanilanIzinGunleri.Any(x=>x.Id == id))
+                if (!_context.UcretsizIzinler.Any(f => f.Id == id))
                 {
                     return NotFound();
                 }
@@ -59,19 +59,22 @@ namespace PersonelAPI.Controllers
                 {
                     throw;
                 }
+                
             }
             return NoContent();
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteKullanilanIzinGunleri(int id)
+        public async Task<IActionResult> DeleteUcretsizIzin(int id)
         {
-            var silinecek = await _context.KullanilanIzinGunleri.FindAsync(id);
-            if(silinecek == null)
+            var izin = await _context.UcretsizIzinler.FindAsync(id);
+            if (izin == null)
             {
                 return NotFound();
             }
-            _context.Remove(silinecek);
+
+            _context.UcretsizIzinler.Remove(izin);
             await _context.SaveChangesAsync();
+
             return NoContent();
         }
     }

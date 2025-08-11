@@ -16,6 +16,7 @@ public class PersonelDbContext : DbContext
     public DbSet<Rapor> Raporlar { get; set; }
     public DbSet<Maas> Maaslar { get; set; }
     public DbSet<EkOdeme> EkOdemeler { get; set; }
+    public DbSet<Kullanici> Kullanicilar { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,6 +31,10 @@ public class PersonelDbContext : DbContext
         modelBuilder.Entity<Rapor>().ToTable("Rapor");
         modelBuilder.Entity<Maas>().ToTable("Maas");
         modelBuilder.Entity<EkOdeme>().ToTable("EkOdeme");
+        modelBuilder.Entity<Kullanici>().ToTable("Kullanici");
+
+       
+
 
         // 1'e 1 ilişki: Personel - BankaBilgisi
         modelBuilder.Entity<BankaBilgisi>()
@@ -68,5 +73,9 @@ public class PersonelDbContext : DbContext
             .HasMany(m => m.EkOdemeler)
             .WithOne(e => e.Maas)
             .HasForeignKey(e => e.MaasId);
+        modelBuilder.Entity<Personel>()
+           .HasOne(p => p.Kullanici)
+           .WithOne(k => k.Personel)
+           .HasForeignKey<Kullanici>(k => k.PersonelId);
     }
 }

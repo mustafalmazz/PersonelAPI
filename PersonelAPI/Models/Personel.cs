@@ -15,4 +15,5 @@ public class Personel
     public ICollection<UcretsizIzin> UcretsizIzinler { get; set; } = new List<UcretsizIzin>();
     public ICollection<Rapor> Raporlar { get; set; } = new List<Rapor>();
     public ICollection<Maas> Maaslar { get; set; } = new List<Maas>();
+    public Kullanici? Kullanici { get; set; }
 }

@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PersonelAPI.Models;
+using System.Security.Claims;
 
 namespace PersonelAPI.Controllers
 {
@@ -10,20 +12,21 @@ namespace PersonelAPI.Controllers
     {
         private readonly EmployeeDbContext _context;
 
-        public AddressController(EmployeeDbContext context 
+        public AddressController(EmployeeDbContext context )
         {
             _context = context;
         }
 
-        // GET: api/address
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Address>>> GetAddresses()
         {
+            // Admin tüm adresleri görebilir
             return await _context.Addresses.ToListAsync();
         }
 
-        // GET: api/address/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<ActionResult<Address>> GetAddress(int id)
         {
             var address = await _context.Addresses.FindAsync(id);
@@ -31,11 +34,24 @@ namespace PersonelAPI.Controllers
             if (address == null)
                 return NotFound();
 
+            if (User.IsInRole("Employee"))
+            {
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+                // Employee sadece kendi adreslerine erişebilir
+                var employee = await _context.Employees
+                    .Include(e => e.Addresses)
+                    .FirstOrDefaultAsync(e => e.User.Id == userId);
+
+                if (employee == null || !employee.Addresses.Any(a => a.Id == id))
+                    return Forbid();
+            }
+
             return address;
         }
 
-        // POST: api/address
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Address>> PostAddress(Address address)
         {
             _context.Addresses.Add(address);
@@ -44,12 +60,24 @@ namespace PersonelAPI.Controllers
             return CreatedAtAction(nameof(GetAddress), new { id = address.Id }, address);
         }
 
-        // PUT: api/address/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> PutAddress(int id, Address address)
         {
             if (id != address.Id)
                 return BadRequest();
+
+            if (User.IsInRole("Employee"))
+            {
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+                var employee = await _context.Employees
+                    .Include(e => e.Addresses)
+                    .FirstOrDefaultAsync(e => e.User.Id == userId);
+
+                if (employee == null || !employee.Addresses.Any(a => a.Id == id))
+                    return Forbid();
+            }
 
             _context.Entry(address).State = EntityState.Modified;
 
@@ -68,8 +96,8 @@ namespace PersonelAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: api/address/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAddress(int id)
         {
             var address = await _context.Addresses.FindAsync(id);

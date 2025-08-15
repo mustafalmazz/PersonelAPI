@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PersonelAPI.Models;
@@ -28,14 +29,13 @@ namespace PersonelAPI.Controllers
             if (user == null)
                 return Unauthorized("Kullanıcı bulunamadı.");
 
-            // Basit password hash karşılaştırması (hash + salt mantığı varsa ona göre değiştir)
             var inputPasswordHash = ComputeHash(request.Password);
             if (!inputPasswordHash.SequenceEqual(user.PasswordHash))
                 return Unauthorized("Şifre yanlış.");
 
             var token = GenerateJwtToken(user);
 
-            return Ok(new { token });
+            return Ok(new { token, role = user.Role });
         }
 
         private string GenerateJwtToken(User user)
@@ -58,9 +58,32 @@ namespace PersonelAPI.Controllers
                 audience: jwtSettings.GetValue<string>("Audience"),
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(2),
-                signingCredentials: creds);
+                signingCredentials: creds
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        [HttpPost("register")]
+        [Authorize(Roles = "Admin")] 
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        {
+            if (await _context.Users.AnyAsync(u => u.Username == request.Username))
+                return BadRequest("Bu kullanıcı zaten mevcut.");
+
+            var passwordHash = ComputeHash(request.Password);
+
+            var newUser = new User
+            {
+                Username = request.Username,
+                PasswordHash = passwordHash,
+                Role = request.Role 
+            };
+
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Kullanıcı oluşturuldu.", userId = newUser.Id });
         }
 
         private byte[] ComputeHash(string password)
@@ -75,4 +98,12 @@ namespace PersonelAPI.Controllers
         public string Username { get; set; }
         public string Password { get; set; }
     }
+
+    public class RegisterRequest
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string Role { get; set; }
+    }
 }
+

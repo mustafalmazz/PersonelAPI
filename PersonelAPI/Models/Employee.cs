@@ -20,6 +20,8 @@ public class Employee
 
     [Column("Gorev")]
     public string Position { get; set; }
+    public bool IsActive { get; set; } = true;
+
 
     [Column("IseGirisTarihi")]
     public DateTime StartDate { get; set; }

@@ -20,7 +20,7 @@ namespace PersonelAPI.Models
         [Column("MaasTarihi")]
         public DateTime SalaryDate { get; set; }
         [Column("CalisilanGun")]
-        public int WorkedDays { get; set; } = 30;
+        public int WorkedDays { get; set; } = 0;
         [Column("UcretsizIzinGun")]
         public int UnpaidLeaveDays { get; set; } = 0;
         [Column("IsciBagkurPrimi")]

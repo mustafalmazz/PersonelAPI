@@ -65,7 +65,7 @@ namespace PersonelAPI.Controllers
         }
 
         [HttpPost("register")]
-        //[Authorize(Roles = "Admin")] 
+        [Authorize(Roles = "Admin")] 
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             if (await _context.Users.AnyAsync(u => u.Username == request.Username))
